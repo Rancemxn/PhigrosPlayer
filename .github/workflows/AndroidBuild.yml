@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-arm64-v8a
-          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/aar/PhigrosPlayer-debug.aar
+          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/
   
   Buildv7a:
     name: "[Android] Build armeabi-v7a"
@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-armeabi-v7a
-          path: .buildozer/android/platform/build-armeabi-v7a/dists/PhigrosPlayer/build/outputs/aar/debug/PhigrosPlayer-debug.aar
+          path: .buildozer/android/platform/build-armeabi-v7a/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
   
   Buildx64:
     name: "[Android] Build x86_64"
@@ -56,5 +56,5 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-x86_64
-          path: .buildozer/android/platform/build-x86_64/dists/PhigrosPlayer/build/outputs/aar/debug/PhigrosPlayer-debug.aar
+          path: .buildozer/android/platform/build-x86_64/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
     
