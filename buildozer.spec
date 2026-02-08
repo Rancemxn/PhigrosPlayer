@@ -37,7 +37,7 @@ version = 2.0
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,hostpython3,bottle,proxy-tools,typing_extensions,cryptography,requests,PyYAML,numpy,pyjnius,websockets==13.1,rjsmin,Pillow,opencv,libogg,libvorbis,librosa==0.10.2.post1,fsb5,pydub,UnityPy==1.10.18
+requirements = python3,hostpython3,bottle,proxy-tools,typing_extensions,cryptography,requests,PyYAML,numpy,pyjnius,kivy,websockets==13.1,rjsmin,Pillow,opencv,libogg,libvorbis,librosa==0.10.2.post1,fsb5,pydub,UnityPy==1.10.18
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -67,7 +67,7 @@ orientation = landscape, landscape-reverse
 osx.python_version = 3.11.5
 
 # Kivy version to use
-#osx.kivy_version = 2.3.1
+osx.kivy_version = 2.3.1
 
 #
 # Android specific
@@ -173,7 +173,7 @@ android.accept_sdk_license = True
 # their classes. Don't add jars that you do not need, since extra jars can slow
 # down the build process. Allows wildcards matching, for example:
 # OUYA-ODK/libs/*.jar
-#android.add_jars = lib/pywebview-android.jar
+android.add_jars = lib/pywebview-android.jar
 
 # (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
