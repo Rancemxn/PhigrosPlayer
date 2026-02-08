@@ -207,7 +207,7 @@ args:
   - --ignore-gpu-blocklist
 
 prefs:
-  gfx.work-around-driver-bugs: true
+  gfx.work-around-driver-bugs: false
   gfx.canvas.accelerated: true
   
   layers.gpu-process.force-enabled: true
@@ -216,7 +216,15 @@ prefs:
   gfx.webrender.software: false
   gfx.webrender.fallback.software: false
 
-                    
+  gl.ignore-warnings: true
+  webgl.force-enabled: true
+  layers.acceleration.force-enabled: true
+  gfx.webrender.all: true
+  gfx.webrender.enabled: true
+  gfx.webrender.software: false
+  gfx.webrender.fallback.software: false
+  webgl.disable-fail-if-major-performance-caveat: false
+  webgl.min_capability_mode: false
 """)
         logging.info('Initializing Geckoview')
         builder = Builder()
