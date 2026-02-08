@@ -3,7 +3,7 @@ name: Build Android
 on:
   push:
     branches:
-      - la2
+      - la
   workflow_dispatch:
 
 jobs:
@@ -18,11 +18,15 @@ jobs:
         uses: ./.github/actions/build/
         with:
           build_type: "arm64-v8a"
+          keystore_base64: ${{ secrets.KEYSTORE_BASE64 }}
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ secrets.KEY_ALIAS }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
       - name: Upload APK
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-arm64-v8a
-          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
+          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/apk/release/PhigrosPlayer-release.apk
   
   Buildv7a:
     name: "[Android] Build armeabi-v7a"
@@ -35,11 +39,17 @@ jobs:
         uses: ./.github/actions/build/
         with:
           build_type: "armeabi-v7a"
+          keystore_base64: ${{ secrets.KEYSTORE_BASE64 }}
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ secrets.KEY_ALIAS }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
+    
       - name: Upload APK
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-armeabi-v7a
-          path: .buildozer/android/platform/build-armeabi-v7a/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
+          path: .buildozer/android/platform/build-armeabi-v7a/dists/PhigrosPlayer/build/outputs/apk/release/PhigrosPlayer-release.apk
+          
   
   Buildx64:
     name: "[Android] Build x86_64"
@@ -52,9 +62,14 @@ jobs:
         uses: ./.github/actions/build/
         with:
           build_type: "x86_64"
+          keystore_base64: ${{ secrets.KEYSTORE_BASE64 }}
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ secrets.KEY_ALIAS }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
+
       - name: Upload APK
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-x86_64
-          path: .buildozer/android/platform/build-x86_64/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
+          path: .buildozer/android/platform/build-x86_64/dists/PhigrosPlayer/build/outputs/apk/release/PhigrosPlayer-release.apk
     

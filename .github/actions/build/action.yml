@@ -1,10 +1,20 @@
 name: Build Phigros Player
 
+description: Build Steps
+
 inputs:
   build_type:
     required: true
     default: "arm64-v8a"
     type: string
+  keystore_base64:
+    required: true
+  keystore_password:
+    required: true
+  key_alias:
+    required: true
+  key_password:
+    required: true
 
 runs:
   using: "composite"
@@ -65,9 +75,15 @@ runs:
       shell: bash
     
     - name: Build Android
+      env:
+        P4A_RELEASE_KEYSTORE: ${{ github.workspace }}/my-release-key.keystore
+        P4A_RELEASE_KEYALIAS: ${{ inputs.key_alias }}
+        P4A_RELEASE_KEYSTORE_PASSWD: ${{ inputs.keystore_password }}
+        P4A_RELEASE_KEYALIAS_PASSWD: ${{ inputs.key_password }}
       run: |
+        echo "${{ inputs.keystore_base64 }}" | base64 -d > my-release-key.keystore
         source venv/bin/activate
         pip3 install -q Cython==0.29.33 buildozer wheel setuptools
         sed -i 's/android.archs = arm64-v8a/android.archs = ${{ inputs.build_type }}/' buildozer.spec
-        buildozer android debug
+        buildozer android release --keystore="${{ github.workspace }}/my-release-key.keystore" --signkey="${{ inputs.key_alias }}" --keystorepw="${{ inputs.keystore_password }}" --signkeypw="${{ inputs.key_password }}"
       shell: bash
