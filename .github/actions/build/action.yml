@@ -85,5 +85,5 @@ runs:
         source venv/bin/activate
         pip3 install -q Cython==0.29.33 buildozer wheel setuptools
         sed -i 's/android.archs = arm64-v8a/android.archs = ${{ inputs.build_type }}/' buildozer.spec
-        buildozer android release --keystore="${{ github.workspace }}/my-release-key.keystore" --signkey="${{ inputs.key_alias }}" --keystorepw="${{ inputs.keystore_password }}" --signkeypw="${{ inputs.key_password }}
+        buildozer android release --keystore="${{ github.workspace }}/my-release-key.keystore" --signkey="${{ inputs.key_alias }}" --keystorepw="${{ inputs.keystore_password }}" --signkeypw="${{ inputs.key_password }}"
       shell: bash
