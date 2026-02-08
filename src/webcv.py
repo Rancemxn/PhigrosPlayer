@@ -229,7 +229,6 @@ prefs:
         self.settings.setConsoleOutputEnabled(True)
         self.settings.setJavaScriptEnabled(True)
         #self.settings.setParallelMarkingEnabled(True)
-        self.settings.setGlMsaaLevel(0) # disable MSAA
         
         self.webview = GeckoView(activity)
         
