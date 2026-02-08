@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: PhigrosPlayer-arm64-v8a
-          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/
+          path: .buildozer/android/platform/build-arm64-v8a/dists/PhigrosPlayer/build/outputs/apk/debug/PhigrosPlayer-debug.apk
   
   Buildv7a:
     name: "[Android] Build armeabi-v7a"
