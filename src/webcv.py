@@ -220,6 +220,7 @@ prefs:
         builder = Builder()
         builder.configFilePath(os.path.abspath('org.qaqfei.phigrosplayer.phigrosplayer-geckoview-config.yaml'))
         builder.aboutConfigEnabled(True)
+        builder.fissionEnabled(True)
         builder = cast(GeckoRuntimeSettings, builder.build())
         self.runtime = GeckoRuntime.create(activity, builder)
         self.settings = self.runtime.getSettings()
@@ -238,7 +239,6 @@ prefs:
         match_parent = LayoutParams.MATCH_PARENT
         params = LayoutParams(match_parent, match_parent)
         activity.setContentView(self.webview, params)
-        activity.setContentView(self.webview)
         
     
     def _init(self, width: int, height: int, x: int, y: int):
