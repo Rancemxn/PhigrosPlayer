@@ -217,6 +217,7 @@ prefs:
   gl.ignore-warnings: true
                     
   layers.acceleration.draw-fps: true
+  gfx.webrender.debug.profiler: true
 """)
         logging.info('Initializing Geckoview')
         builder = Builder()
