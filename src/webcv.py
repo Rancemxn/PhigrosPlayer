@@ -215,19 +215,10 @@ prefs:
   
   layers.gpu-process.force-enabled: true
   security.sandbox.gpu.level: 0
-  gfx.webrender.all: true
-  gfx.webrender.software: false
-  gfx.webrender.fallback.software: false
 
   gl.ignore-warnings: true
   webgl.force-enabled: true
   layers.acceleration.force-enabled: true
-  gfx.webrender.all: true
-  gfx.webrender.enabled: true
-  gfx.webrender.software: false
-  gfx.webrender.fallback.software: false
-  webgl.disable-fail-if-major-performance-caveat: false
-  webgl.min_capability_mode: false
 """)
         logging.info('Initializing Geckoview')
         builder = Builder()
