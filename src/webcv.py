@@ -235,6 +235,9 @@ prefs:
         self.webview.setSession(self.session)
         self.session.loadUri('about:support')
         
+        match_parent = LayoutParams.MATCH_PARENT
+        params = LayoutParams(match_parent, match_parent)
+        activity.setContentView(self.webview, params)
         activity.setContentView(self.webview)
         
     
