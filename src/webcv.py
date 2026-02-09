@@ -212,6 +212,7 @@ prefs:
   gfx.canvas.accelerated: true
   gfx.canvas.accelerated.force-enabled: true
   gfx.canvas.accelerated.debug: true
+  gfx.canvas.accelerated.allow-in-parent: true
                     
 
   gfx.webrender.debug.profiler: true
