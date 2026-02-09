@@ -217,7 +217,7 @@ prefs:
   layers.gpu-process.force-enabled: true
   security.sandbox.gpu.level: 0
 
-  gfx.webrender.enabled: false
+
   gl.ignore-warnings: true
   webgl.force-enabled: true
   layers.acceleration.force-enabled: true
