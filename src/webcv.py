@@ -220,7 +220,7 @@ prefs:
         builder = Builder()
         builder.configFilePath(os.path.abspath('org.qaqfei.phigrosplayer.phigrosplayer-geckoview-config.yaml'))
         builder.aboutConfigEnabled(True)
-        builder.fissionEnabled(True)
+        builder.isolatedProcessEnabled(True)
         builder = cast(GeckoRuntimeSettings, builder.build())
         self.runtime = GeckoRuntime.create(activity, builder)
         self.settings = self.runtime.getSettings()
