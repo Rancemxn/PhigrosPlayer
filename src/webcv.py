@@ -40,6 +40,9 @@ if checksys == 'Android':
     from jnius import autoclass, cast # type: ignore
     from android.runnable import run_on_ui_thread # type: ignore
 
+    from android.permissions import request_permissions, Permission # type: ignore
+    request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
+
     
     GeckoRuntimeSettings = autoclass('org.mozilla.geckoview.GeckoRuntimeSettings')
     Builder = autoclass('org.mozilla.geckoview.GeckoRuntimeSettings$Builder')  # 使用 $ 符号
