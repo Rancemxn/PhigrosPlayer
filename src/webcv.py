@@ -205,7 +205,7 @@ class WebCanvas:
         with open('org.qaqfei.phigrosplayer.phigrosplayer-geckoview-config.yaml', 'w', encoding='utf-8') as f:
             f.write("""
 env:
-  MOZ_LOG: "Acceleration:5,GLContext:5,Compositor:5,SharedSurface:5,WebRender:5,GPU:5"
+  MOZ_LOG: "Canvas:5,GfxAdapter:5,Acceleration:5,GLContext:5,Compositor:5,SharedSurface:5,WebRender:5,GPU:5"
 
 args:
   - --ignore-gpu-blocklist
