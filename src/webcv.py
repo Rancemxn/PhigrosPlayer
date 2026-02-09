@@ -239,7 +239,7 @@ prefs:
         self.session = GeckoSession()
         self.session.open(self.runtime)
         self.webview.setSession(self.session)
-        self.session.loadUri('about:support)
+        self.session.loadUri('about:support')
         
         activity.setContentView(self.webview)
         
