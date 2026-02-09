@@ -207,16 +207,12 @@ class WebCanvas:
 env:
   MOZ_LOG: "Canvas:5,GfxAdapter:5,Acceleration:5,GLContext:5,Compositor:5,SharedSurface:5,WebRender:5,GPU:5"
 
-args:
-  - --ignore-gpu-blocklist
-
 prefs:
   gfx.work-around-driver-bugs: false
   gfx.canvas.accelerated: true
   gfx.canvas.accelerated.force-enabled: true
   gl.ignore-warnings: true
                     
-  layers.acceleration.draw-fps: true
   gfx.webrender.debug.profiler: true
 """)
         logging.info('Initializing Geckoview')
