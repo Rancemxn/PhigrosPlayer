@@ -218,6 +218,7 @@ args:
 prefs:
   gfx.work-around-driver-bugs: false
   gfx.canvas.accelerated: true
+  gfx.webgpu.ignore-blocklist: true
   gfx.canvas.accelerated.force-enabled: true
   gfx.canvas.accelerated.debug: true
   gfx.canvas.accelerated.allow-in-parent: true
