@@ -218,6 +218,8 @@ prefs:
   gfx.canvas.accelerated.debug: true
   gfx.canvas.accelerated.allow-in-parent: true
   gfx.webrender.debug.profiler: true
+  gfx.webrender.fallback.software: false
+  gfx.webrender.software: false
 
   gfx.canvas.accelerated.max-surface-size: 999999
   gfx.canvas.accelerated.max-size: 999999
