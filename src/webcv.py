@@ -220,6 +220,11 @@ prefs:
   gfx.webrender.debug.profiler: true
   gfx.webrender.fallback.software: false
   gfx.webrender.software: false
+  layers.acceleration.disabled: false
+  layers.acceleration.force-enabled: true
+  layers.gpu-process.allow-software: false
+  layers.gpu-process.enabled: true
+  layers.gpu-process.force-enabled: true
 
   gfx.canvas.accelerated.max-surface-size: 999999
   gfx.canvas.accelerated.max-size: 999999
