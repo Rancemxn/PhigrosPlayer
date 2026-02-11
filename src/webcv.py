@@ -211,7 +211,7 @@ prefs:
 
   gfx.canvas.accelerated: true
   gfx.canvas.accelerated.force-enabled: true
-                    
+  gfx.logging.level: 5
   gfx.canvas.max-size: 32767
   gfx.canvas.accelerated.max-size: 32767
   gfx.webrender.debug.profiler: true
