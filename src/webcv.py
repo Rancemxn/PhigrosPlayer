@@ -211,8 +211,8 @@ prefs:
 
   gfx.canvas.accelerated: true
   gfx.canvas.accelerated.force-enabled: true
-  gfx.logging.level: 5
-  gfx.webrender.debug.profiler: true
+  gfx.canvas.accelerated.debug: true
+  gfx.canvas.accelerated.allow-in-parent: true
 """)
         logging.info('Initializing Geckoview')
         builder = Builder()
