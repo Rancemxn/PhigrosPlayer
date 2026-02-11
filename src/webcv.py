@@ -19,6 +19,9 @@ from checksys import checksys
 
 import graplib_webview
 
+import http.server
+import socketserver
+
 disengage_webview = "--disengage-webview" in sys.argv
 
 if checksys != 'Android': import webview
@@ -202,7 +205,26 @@ class WebCanvas:
 
     @run_on_ui_thread
     def geckoview_start(self):
-        
+        def run_server():
+            PORT = 4747
+            web_dir = os.path.dirname(os.path.abspath('web_canvas.html'))
+            
+            class Handler(http.server.SimpleHTTPRequestHandler):
+                def __init__(self, *args, **kwargs):
+                    super().__init__(*args, directory=web_dir, **kwargs)
+            
+            socketserver.TCPServer.allow_reuse_address = True
+            try:
+                with socketserver.TCPServer(("127.0.0.1", PORT), Handler) as httpd:
+                    logging.info(f"Local HTTP Server started on port {PORT}")
+                    httpd.serve_forever()
+            except Exception as e:
+                logging.error(f"Server failed: {e}")
+
+        t = threading.Thread(target=run_server, daemon=True)
+        t.start()
+
+
         with open('org.qaqfei.phigrosplayer.phigrosplayer-geckoview-config.yaml', 'w', encoding='utf-8') as f:
             f.write("""
 env:
@@ -255,7 +277,7 @@ prefs:
         self.session = GeckoSession()
         self.session.open(self.runtime)
         self.webview.setSession(self.session)
-        self.session.loadUri('about:support')
+        self.session.loadUri("http://127.0.0.1:8848/web_canvas.html")
         
         match_parent = LayoutParams.MATCH_PARENT
         params = LayoutParams(match_parent, match_parent)
