@@ -231,9 +231,11 @@ prefs:
   layers.gpu-process.enabled: true
   layers.gpu-process.force-enabled: true
   fission.autostart: true
+  fission.autostart.session: true
   browser.tabs.remote.warmup.enabled: true
   browser.tabs.remote.separatePrivilegedContentProcess: true
   browser.tabs.remote.separateFileUriProcess: true
+  dom.ipc.processCount: 8
   security.sandbox.gpu.level: 0
 """)
         logging.info('Initializing Geckoview')
