@@ -51,11 +51,6 @@ if checksys == 'Android':
     GeckoSession = autoclass('org.mozilla.geckoview.GeckoSession')
     activity = autoclass('org.kivy.android.PythonActivity').mActivity
     LayoutParams = autoclass('android.view.ViewGroup$LayoutParams')
-    ContentDelegate = autoclass('org.mozilla.geckoview.GeckoSession$ContentDelegate')
-
-    class EmptyContentDelegate(PythonJavaClass):
-        __javacontext__ = 'app'
-        __javainterfaces__ = ['org/mozilla/geckoview/GeckoSession$ContentDelegate']
 
 class JsApi:
     def __init__(self) -> None:
@@ -244,7 +239,6 @@ prefs:
         self.session = GeckoSession()
         self.session.setContentDelegate(EmptyContentDelegate())
         self.session.open(self.runtime)
-        self.webview.setSession(self.session)
         self.session.loadUri(os.path.abspath('web_canvas.html'))
         
         match_parent = LayoutParams.MATCH_PARENT
