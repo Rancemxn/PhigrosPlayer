@@ -232,7 +232,7 @@ prefs:
         self.session = GeckoSession()
         self.session.open(self.runtime)
         self.webview.setSession(self.session)
-        self.session.loadUri(os.path.abspath('web_canvas.html'))
+        self.session.loadUri('about:support')
         
         match_parent = LayoutParams.MATCH_PARENT
         params = LayoutParams(match_parent, match_parent)
