@@ -217,6 +217,9 @@ prefs:
   gfx.canvas.accelerated.force-enabled: true
   gfx.canvas.accelerated.debug: true
   gfx.canvas.accelerated.allow-in-parent: true
+  gfx.canvas.accelerated.max-surface-size: 999999
+  gfx.canvas.accelerated.max-size: 999999
+  gfx.webrender.all: true
   gfx.webrender.debug.profiler: true
   gfx.webrender.fallback.software: false
   gfx.webrender.software: false
@@ -225,9 +228,7 @@ prefs:
   layers.gpu-process.allow-software: false
   layers.gpu-process.enabled: true
   layers.gpu-process.force-enabled: true
-
-  gfx.canvas.accelerated.max-surface-size: 999999
-  gfx.canvas.accelerated.max-size: 999999
+  security.sandbox.gpu.level: 0
 """)
         logging.info('Initializing Geckoview')
         builder = Builder()
