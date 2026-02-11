@@ -44,6 +44,7 @@ if checksys == 'Android':
     request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
 
     
+    os.environ['MOZ_DEBUG_CHILD_PROCESS'] = '1'
     GeckoRuntimeSettings = autoclass('org.mozilla.geckoview.GeckoRuntimeSettings')
     Builder = autoclass('org.mozilla.geckoview.GeckoRuntimeSettings$Builder')  # 使用 $ 符号
     GeckoView = autoclass('org.mozilla.geckoview.GeckoView')
@@ -206,6 +207,7 @@ class WebCanvas:
             f.write("""
 env:
   MOZ_LOG: "Acceleration:5,GLContext:5,Compositor:5,WebRender:5,GPU:5"
+  MOZ_DEBUG_CHILD_PROCESS: 1
 
 args:
   - --ignore-gpu-blocklist
