@@ -54,6 +54,7 @@ if checksys == 'Android':
     ContentDelegate = autoclass('org.mozilla.geckoview.GeckoSession$ContentDelegate')
 
     class EmptyContentDelegate(PythonJavaClass):
+        __javacontext__ = 'app'
         __javainterfaces__ = ['org/mozilla/geckoview/GeckoSession$ContentDelegate']
 
 class JsApi:
