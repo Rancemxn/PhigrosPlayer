@@ -208,6 +208,7 @@ void main() {
     mask = document.querySelector(".mask");
     ctx = canvas_ele.getContext("2d", {
         willReadFrequently: false,
+        forceSoftwareRendering: false,
         alpha: false
     });
     dialog_canvas_ctx = dialog_canvas_ele.getContext("2d");
