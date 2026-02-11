@@ -37,7 +37,7 @@ host = socket.gethostbyname(socket.gethostname()) if "--nolocalhost" in sys.argv
 logging.debug(f"server host: {host}")
 
 if checksys == 'Android':
-    from jnius import autoclass, cast # type: ignore
+    from jnius import autoclass, cast, java_method, PythonJavaClass # type: ignore
     from android.runnable import run_on_ui_thread # type: ignore
 
     from android.permissions import request_permissions, Permission # type: ignore
@@ -51,6 +51,10 @@ if checksys == 'Android':
     GeckoSession = autoclass('org.mozilla.geckoview.GeckoSession')
     activity = autoclass('org.kivy.android.PythonActivity').mActivity
     LayoutParams = autoclass('android.view.ViewGroup$LayoutParams')
+    ContentDelegate = autoclass('org.mozilla.geckoview.GeckoSession$ContentDelegate')
+
+    class EmptyContentDelegate(PythonJavaClass):
+        __javainterfaces__ = ['org/mozilla/geckoview/GeckoSession$ContentDelegate']
 
 class JsApi:
     def __init__(self) -> None:
@@ -230,6 +234,7 @@ prefs:
         self.webview = GeckoView(activity)
         
         self.session = GeckoSession()
+        self.session.setContentDelegate(EmptyContentDelegate())
         self.session.open(self.runtime)
         self.webview.setSession(self.session)
         self.session.loadUri(os.path.abspath('web_canvas.html'))
