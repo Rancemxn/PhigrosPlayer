@@ -212,6 +212,9 @@ class WebCanvas:
 env:
   MOZ_LOG: "Acceleration:5,GLContext:5,Compositor:5,WebRender:5,GPU:5"
 
+args:
+  - --ignore-gpu-blocklist
+
 prefs:
   gfx.work-around-driver-bugs: false
   gfx.canvas.accelerated: true
