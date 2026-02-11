@@ -277,7 +277,7 @@ prefs:
         self.session = GeckoSession()
         self.session.open(self.runtime)
         self.webview.setSession(self.session)
-        self.session.loadUri("http://127.0.0.1:8848/web_canvas.html")
+        self.session.loadUri("http://127.0.0.1:4747/web_canvas.html")
         
         match_parent = LayoutParams.MATCH_PARENT
         params = LayoutParams(match_parent, match_parent)
