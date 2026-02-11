@@ -237,8 +237,8 @@ prefs:
         self.webview = GeckoView(activity)
         
         self.session = GeckoSession()
-        self.session.setContentDelegate(EmptyContentDelegate())
         self.session.open(self.runtime)
+        self.webview.setSession(self.session)
         self.session.loadUri(os.path.abspath('web_canvas.html'))
         
         match_parent = LayoutParams.MATCH_PARENT
