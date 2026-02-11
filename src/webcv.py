@@ -247,6 +247,7 @@ prefs:
   gfx.webrender.debug.profiler: true
   gfx.webrender.fallback.software: false
   gfx.webrender.software: false
+  gfx.webrender.multithreading: true
   layers.acceleration.disabled: false
   layers.acceleration.force-enabled: true
   layers.gpu-process.allow-software: false
