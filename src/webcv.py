@@ -212,7 +212,8 @@ prefs:
   gfx.canvas.accelerated: true
   gfx.canvas.accelerated.force-enabled: true
                     
-
+  gfx.canvas.max-size: 32767
+  gfx.canvas.accelerated.max-size: 32767
   gfx.webrender.debug.profiler: true
 """)
         logging.info('Initializing Geckoview')
