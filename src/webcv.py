@@ -207,7 +207,6 @@ class WebCanvas:
             f.write("""
 env:
   MOZ_LOG: "Acceleration:5,GLContext:5,Compositor:5,WebRender:5,GPU:5"
-  MOZ_DEBUG_CHILD_PROCESS: 1
 
 args:
   - --ignore-gpu-blocklist
@@ -230,12 +229,6 @@ prefs:
   layers.gpu-process.allow-software: false
   layers.gpu-process.enabled: true
   layers.gpu-process.force-enabled: true
-  fission.autostart: true
-  fission.autostart.session: true
-  browser.tabs.remote.warmup.enabled: true
-  browser.tabs.remote.separatePrivilegedContentProcess: true
-  browser.tabs.remote.separateFileUriProcess: true
-  dom.ipc.processCount: 8
   security.sandbox.gpu.level: 0
 """)
         logging.info('Initializing Geckoview')
