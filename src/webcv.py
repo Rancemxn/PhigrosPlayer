@@ -216,10 +216,7 @@ prefs:
   gfx.canvas.accelerated: true
   gfx.webgpu.ignore-blocklist: true
   gfx.canvas.accelerated.force-enabled: true
-  gfx.canvas.accelerated.debug: true
   gfx.canvas.accelerated.allow-in-parent: true
-  gfx.canvas.accelerated.max-surface-size: 999999
-  gfx.canvas.accelerated.max-size: 999999
   gfx.webrender.all: true
   gfx.webrender.debug.profiler: true
   gfx.webrender.fallback.software: false
@@ -315,6 +312,7 @@ prefs:
         self._jscode_orders[order].append((code, add_code_array))
     
     def _rjwc(self, codes: list[str]):
+        codes.append("ctx.flush();") 
         self.run_js_code(f"{codes}.forEach(r2eval);")
         
         if self.renderdemand:

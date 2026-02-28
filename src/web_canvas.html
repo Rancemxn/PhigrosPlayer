@@ -63,6 +63,20 @@
     }
 </style>
 
+<script src="https://rancemxn.github.io/Canvaskit2D/canvas2d.js"></script>
+
+<script>
+    async function main() {
+        // 1. 初始化 Canvaskit2D
+        await Canvas2D.init({
+            canvaskitPath: 'https://rancemxn.github.io/Canvaskit2D/canvaskit/',
+            fontsPath: 'https://rancemxn.github.io/Canvaskit2D/fonts/'
+        });
+    }
+
+    main().catch(console.error);
+</script>
+
 <script>
     (() => {
         const cv = document.createElement("canvas");
@@ -206,11 +220,32 @@ void main() {
     body_ele.appendChild(canvas_ele);
     body_ele.appendChild(dialog_canvas_ele);
     mask = document.querySelector(".mask");
-    ctx = canvas_ele.getContext("2d", {
-        willReadFrequently: false,
-        forceSoftwareRendering: false,
-        alpha: false
-    });
+    
+    ctx = Canvas2D.createCanvasContext(canvas_ele);
+    const nativePrototype = CanvasRenderingContext2D.prototype;
+    const customMethods = [
+        '_drawImage', 'drawImage', 'drawRotateImage', 'drawAnchorESRotateImage', 
+        'drawScaleImage', 'drawRPEMultipleRotateText', 'drawRotateText', 
+        'drawAlphaImage', 'drawAlphaCenterImage', 'drawTextEx', 'fillRectEx',
+        'fillRectExConvert2LeftCenter', 'fillRectExByRect', 'strokeRectEx',
+        'addRoundRectData', 'drawRoundDatas', 'roundRectsEx', 'drawLineEx',
+        '_diagonalRectangle', 'clipDiagonalRectangle', 'clipRect', 'drawClipXText',
+        'drawDiagonalRectangle', 'drawDiagonalDialogRectangleText', 
+        'drawDiagonalRectangleClipImage', 'drawDiagonalRectangleClipImageOnlyHeight',
+        'drawRotateText2', 'drawTriangleFrame', 'drawRectMultilineText',
+        'drawRectMultilineTextDiagonal', 'drawRectMultilineTextCenter', 'drawUIItems',
+        'clear', 'reset', 'roundRect'
+    ];
+
+    for (const methodName of customMethods) {
+        if (nativePrototype[methodName]) {
+            ctx[methodName] = nativePrototype[methodName].bind(ctx);
+        }
+    }
+    ctx._drawImage = ctx.drawImage;
+    ctx.drawImage = nativePrototype.drawImage.bind(ctx);
+
+    const dialog_canvas_ctx = dialog_canvas_ele.getContext("2d");
     dialog_canvas_ctx = dialog_canvas_ele.getContext("2d");
     jscodes = new Array();
     resize_task = false;
