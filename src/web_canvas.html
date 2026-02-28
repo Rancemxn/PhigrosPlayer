@@ -207,9 +207,6 @@ void main() {
         CanvasRenderingContext2D.prototype.rect
     );
         //    ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-    }
-
-    
     root_ele = document.getRootNode();
     html_ele = root_ele.children[0];
     body_ele = html_ele.children[1];
@@ -1141,8 +1138,11 @@ void main() {
     // });
     connectToSocketBridge()
 
+    }
+
+    
     main().catch(error => {
-        console.error("Application failed to start:", error);
-        alert("应用启动失败，详情请查看控制台。");
-    });
+    console.error("Application failed to start:", error);
+    alert("应用启动失败，详情请查看控制台。");
+});
 </script>
