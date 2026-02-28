@@ -65,6 +65,8 @@
 
 <script src="https://rancemxn.github.io/Canvaskit2D/canvas2d.js"></script>
 
+
+
 <script>
     async function main() {
         console.log("Initializing Canvaskit2D...");
@@ -73,11 +75,439 @@
             fontsPath: 'https://rancemxn.github.io/Canvaskit2D/fonts/'
         });
         console.log("Canvaskit2D Initialized.");
+        root_ele = document.getRootNode();
+        html_ele = root_ele.children[0];
+        body_ele = html_ele.children[1];
+        canvas_ele = document.createElement("canvas");
+        canvas_ele.className = "main-canvas";
+        dialog_canvas_ele = document.createElement("canvas");
+        dialog_canvas_ele.className = "dialog-canvas";
+        body_ele.appendChild(canvas_ele);
+        body_ele.appendChild(dialog_canvas_ele);
+        mask = document.querySelector(".mask");
+        canvas_ele.className = "main-canvas";
+        document.body.appendChild(canvas_ele);
+        
+        const ctx = Canvas2D.createCanvasContext(canvas_ele);
+        window.ctx = ctx; 
+        const CKContext = Canvas2D.CanvasRenderingContext2D;
 
         // 4. 将你项目之前的所有 JS 代码（除了 <script src=...>）
         //    全部粘贴到这里。
         //    ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+        CKContext.prototype.reset = (
+        CKContext.prototype.reset ||
+        function () {
+            window.ctx.resetTransform();
+            window.ctx.clearRect(0, 0, window.ctx.canvas.width, window.ctx.canvas.height);
+        }
+    );
 
+    CKContext.prototype.roundRect = (
+        CKContext.prototype.roundRect ||
+        CKContext.prototype.rect
+    );
+        CKContext.prototype._drawImage = CKContext.prototype.drawImage;
+
+    CKContext.prototype.drawImage = function(...args) {
+        args[0] = toLowQualityImage(args[0]);
+        if (!window.ctx.globalAlpha) return;
+        return window.ctx._drawImage(...args);
+    }
+
+    CKContext.prototype.drawRotateImage = function(im, x, y, width, height, deg, alpha) { // draw at the position center
+        window.ctx.save();
+        window.ctx.globalAlpha *= alpha;
+        if (!!deg) {
+            window.ctx.translate(x, y);
+            window.ctx.rotate(deg * Math.PI / 180);
+            window.ctx.drawImage(im, -width / 2, -height / 2, width, height);
+        } else {
+            window.ctx.drawImage(im, x - width / 2, y - height / 2, width, height);
+        }
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawAnchorESRotateImage = function(im, x, y, width, height, deg, alpha) {
+        window.ctx.save();
+        window.ctx.globalAlpha *= alpha;
+        if (!!deg) {
+            window.ctx.translate(x, y);
+            window.ctx.rotate(deg * Math.PI / 180);
+            window.ctx.drawImage(im, -width / 2, -height, width, height);
+        } else {
+            window.ctx.drawImage(im, x - width / 2, y - height, width, height);
+        }
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawScaleImage = function(im, x, y, width, height, xs, ys) {
+        x += width / 2; y += height / 2;
+        window.ctx.save();
+        window.ctx.translate(x, y);
+        window.ctx.scale(xs, ys);
+        window.ctx.drawImage(im, -width / 2, -height / 2, width, height);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawRPEMultipleRotateText = function(text, x, y, deg, fontsize, color, xs, ys) {
+        window.ctx.save();
+        window.ctx.translate(x, y);
+        window.ctx.rotate(deg * Math.PI / 180);
+        window.ctx.scale(xs, ys);
+        window.ctx.fillStyle = color;
+        window.ctx.textAlign = "center";
+        window.ctx.textBaseline = "middle";
+        window.ctx.font = `${fontsize}px PhigrosFont`;
+
+        if (text.includes("\n") && RPEVersion >= 150) {
+            let texts = text.split("\n");
+            let x = 0.0; let y = 0.0;
+            for (let currtext of texts) {
+                if (currtext) window.ctx.fillText(currtext, x, y);
+                let measure = window.ctx.measureText(currtext);
+                y += (measure.actualBoundingBoxDescent + measure.actualBoundingBoxAscent) * 1.25;
+            }
+        }
+        else {
+            window.ctx.fillText(text, 0, 0);
+        }
+
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawRotateText = function(text, x, y, deg, fontsize, color, xscale, yscale) {
+        window.ctx.save();
+        window.ctx.translate(x, y);
+        window.ctx.rotate(deg * Math.PI / 180);
+        window.ctx.scale(xscale, yscale);
+        window.ctx.fillStyle = color;
+        window.ctx.textAlign = "center";
+        window.ctx.textBaseline = "middle";
+        window.ctx.font = `${fontsize}px PhigrosFont`;
+        window.ctx.fillText(text, 0, 0);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawAlphaImage = function(im, x, y, width, height, alpha) {
+        window.ctx.save()
+        window.ctx.globalAlpha *= alpha;
+        window.ctx.drawImage(im, x, y, width, height);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawAlphaCenterImage = function(im, x, y, width, height, alpha) {
+        window.ctx.save()
+        window.ctx.globalAlpha *= alpha;
+        window.ctx.drawImage(im, x - width / 2, y - height / 2, width, height);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawTextEx = function(text, x, y, font, color, align, baseline) {
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.textAlign = align;
+        window.ctx.textBaseline = baseline;
+        window.ctx.font = font;
+        window.ctx.fillText(text, x, y);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.fillRectEx = function(x, y, w, h, color) {
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.fillRect(x, y, w, h);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.fillRectExConvert2LeftCenter = function(x, y, w, h, color) {
+        y += h / 2;
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.beginPath();
+        window.ctx.moveTo(x, y - h / 2);
+        window.ctx.lineTo(x + w, y - h / 2);
+        window.ctx.lineTo(x + w, y + h / 2);
+        window.ctx.lineTo(x, y + h / 2);
+        window.ctx.closePath();
+        window.ctx.fill();
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.fillRectExByRect = function(x0, y0, x1, y1, color) {
+        return window.ctx.fillRectEx(x0, y0, x1 - x0, y1 - y0, color);
+    }
+
+    CKContext.prototype.strokeRectEx = function(x, y, w, h, color, width) {
+        window.ctx.save();
+        window.ctx.strokeStyle = color;
+        window.ctx.lineWidth = width;
+        window.ctx.strokeRect(x, y, w, h);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.addRoundRectData = function(x, y, w, h, r) {
+        if (window.ctx._roundDatas == undefined) window.ctx._roundDatas = [];
+        window.ctx._roundDatas.push({ x: x, y: y, w: w, h: h, r: r });
+    }
+
+    CKContext.prototype.drawRoundDatas = function(color) {
+        if (window.ctx._roundDatas) {
+            window.ctx.roundRectsEx(color, window.ctx._roundDatas);
+            window.ctx._roundDatas = undefined;
+        }
+    }
+
+    CKContext.prototype.roundRectsEx = function(color, datas) {
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.beginPath();
+        for (let i of datas) {
+            window.ctx.roundRect(i.x, i.y, i.w, i.h, i.r);
+        }
+        window.ctx.fill();
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawLineEx = function(x1, y1, x2, y2, width, color) {
+        window.ctx.save();
+        window.ctx.strokeStyle = color;
+        window.ctx.lineWidth = width;
+        window.ctx.beginPath();
+        window.ctx.moveTo(x1, y1);
+        window.ctx.lineTo(x2, y2);
+        window.ctx.stroke();
+        window.ctx.restore();
+    }
+
+    CKContext.prototype._diagonalRectangle = function(x0, y0, x1, y1, power) {
+        window.ctx.moveTo(x0 + (x1 - x0) * power, y0);
+        window.ctx.lineTo(x1, y0);
+        window.ctx.lineTo(x1 - (x1 - x0) * power, y1);
+        window.ctx.lineTo(x0, y1);
+        window.ctx.lineTo(x0 + (x1 - x0) * power, y0);
+    }
+
+    CKContext.prototype.clipDiagonalRectangle = function(x0, y0, x1, y1, power) {
+        window.ctx.beginPath();
+        window.ctx._diagonalRectangle(x0, y0, x1, y1, power);
+        window.ctx.clip();
+    }
+
+    CKContext.prototype.clipRect = function(x0, y0, x1, y1) {
+        window.ctx.beginPath();
+        window.ctx.rect(x0, y0, x1 - x0, y1 - y0);
+        window.ctx.clip();
+    }
+    
+    CKContext.prototype.drawClipXText = function(text, x, y, align, baseline, color, font, clipx0, clipx1) {
+        window.ctx.save();
+        window.ctx.clipRect(clipx0, 0, clipx1, window.ctx.canvas.height);
+        window.ctx.fillStyle = color;
+        window.ctx.textAlign = align;
+        window.ctx.textBaseline = baseline;
+        window.ctx.font = font;
+        window.ctx.fillText(text, x, y);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawDiagonalRectangle = function(x0, y0, x1, y1, power, color) {
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.beginPath();
+        window.ctx._diagonalRectangle(x0, y0, x1, y1, power);
+        window.ctx.fill();
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawDiagonalDialogRectangleText = function(x0, y0, x1, y1, power, text1, text2, color, font) {
+        window.ctx.save();
+        window.ctx.fillStyle = color;
+        window.ctx.font = font;
+        window.ctx.textBaseline = "middle";
+        window.ctx.textAlign = "left";
+        window.ctx.fillText(text1, x0 + (x1 - x0) * power * 3.0, y0 + (y1 - y0) * 0.5);
+        window.ctx.textAlign = "right";
+        window.ctx.fillText(text2, x1 - (x1 - x0) * power * 2.0, y0 + (y1 - y0) * 0.5);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawDiagonalRectangleClipImage = function(x0, y0, x1, y1, im, imx, imy, imw, imh, power, alpha) {
+        if (alpha == 0.0) return;
+        window.ctx.save();
+        window.ctx.globalAlpha *= alpha;
+        window.ctx.beginPath();
+        window.ctx._diagonalRectangle(x0, y0, x1, y1, power);
+        window.ctx.clip();
+        window.ctx.drawImage(im, x0 + imx, y0 + imy, imw, imh);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawDiagonalRectangleClipImageOnlyHeight = function(x0, y0, x1, y1, im, imh, power, alpha) {
+        let imw = imh * im.width / im.height;
+        if (imw < x1 - x0) {
+            imw = x1 - x0;
+            imh = imw * im.height / im.width;
+        }
+        let imx = (x1 - x0) / 2 - imw / 2;
+        let imy = (y1 - y0) / 2 - imh / 2;
+        return window.ctx.drawDiagonalRectangleClipImage(x0, y0, x1, y1, im, imx, imy, imw, imh, power, alpha);
+    }
+
+    CKContext.prototype.drawRotateText2 = function(text, x, y, deg, color, font, align, baseline) {
+        window.ctx.save();
+        window.ctx.translate(x, y);
+        window.ctx.rotate(deg * Math.PI / 180);
+        window.ctx.fillStyle = color;
+        window.ctx.textAlign = align;
+        window.ctx.textBaseline = baseline;
+        window.ctx.font = font;
+        window.ctx.fillText(text, 0, 0);
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawTriangleFrame = function(x0, y0, x1, y1, x2, y2, color, width) {
+        window.ctx.save();
+        window.ctx.strokeStyle = color;
+        window.ctx.lineWidth = width;
+        window.ctx.beginPath();
+        window.ctx.moveTo(x0, y0);
+        window.ctx.lineTo(x1, y1);
+        window.ctx.lineTo(x2, y2);
+        window.ctx.closePath();
+        window.ctx.stroke();
+        window.ctx.restore();
+    }
+
+    CKContext.prototype.drawRectMultilineText = function(x0, y0, x1, y1, text, color, font, fontsize, lineOffsetScale) {
+        window.ctx.save();
+
+        window.ctx.font = font;
+        window.ctx.fillStyle = color;
+        window.ctx.textBaseline = "top";
+        window.ctx.textAlign = "left";
+        let texts = splitText(x0, y0, x1, y1, text, this);
+
+        window.ctx.rect(x0, y0, x1 - x0, y1 - y0);
+        let dy = 0.0;
+
+        for (let i = 0; i < texts.length; i++) {
+            window.ctx.fillText(texts[i], x0, y0 + dy);
+            dy += fontsize * lineOffsetScale;
+            if (dy >= (y1 - y0)) break;
+        }
+
+        window.ctx.restore();
+        return texts.length * fontsize * lineOffsetScale;
+    }
+
+    CKContext.prototype.drawRectMultilineTextDiagonal = function(x0, y0, x1, y1, text, color, font, fontsize, lineDiagonal, lineOffsetScale) {
+        window.ctx.save();
+
+        window.ctx.font = font;
+        window.ctx.fillStyle = color;
+        window.ctx.textBaseline = "top";
+        window.ctx.textAlign = "left";
+        let texts = splitText(x0, y0, x1, y1, text, this);
+
+        window.ctx.rect(x0, y0, x1 - x0, y1 - y0);
+        let dx = 0.0;
+        let dy = 0.0;
+
+        for (let i = 0; i < texts.length; i++) {
+            if (texts[i]) {
+                window.ctx.fillText(texts[i], x0 + dx, y0 + dy);
+                dy += fontsize * lineOffsetScale;
+                dx += lineDiagonal;
+            } else {
+                dx += lineDiagonal * 0.5;
+                dy += fontsize * lineOffsetScale * 0.5;
+            }
+            if (dy >= (y1 - y0)) break;
+        }
+
+        window.ctx.restore();
+        return texts.length * fontsize * lineOffsetScale;
+    }
+
+    CKContext.prototype.drawRectMultilineTextCenter = function(x0, y0, x1, y1, text, color, font, fontsize, lineOffsetScale) {
+        window.ctx.save();
+
+        window.ctx.font = font;
+        window.ctx.fillStyle = color;
+        window.ctx.textBaseline = "top";
+        window.ctx.textAlign = "center";
+        let texts = splitText(x0, y0, x1, y1, text, this);
+
+        window.ctx.rect(x0, y0, x1 - x0, y1 - y0);
+        let dy = 0.0;
+
+        for (let i = 0; i < texts.length; i++) {
+            window.ctx.fillText(texts[i], x0 + (x1 - x0) / 2, y0 + dy);
+            dy += fontsize * lineOffsetScale;
+            if (dy >= (y1 - y0)) break;
+        }
+
+        window.ctx.restore();
+        return texts.length * fontsize * lineOffsetScale;
+    }
+
+    window.drawUIItems = CKContext.prototype.drawUIItems = function(datas) {
+            for (let i of datas) {
+                if (i == null) continue;
+
+                if (i.type == "text") {
+                    window.ctx.save();
+                    window.ctx.font = `${i.fontsize}px PhigrosFont`;
+                    window.ctx.textBaseline = i.textBaseline;
+                    window.ctx.textAlign = i.textAlign;
+                    window.ctx.fillStyle = i.color;
+                    window.ctx.translate(i.x + i.dx, i.y + i.dy);
+                    if (i.sx != 1.0 || i.sy != 1.0) window.ctx.scale(i.sx, i.sy);
+                    if (i.rotate != 0.0) window.ctx.rotate(i.rotate * Math.PI / 180);
+                    window.ctx.fillText(i.text, 0, 0);
+                    window.ctx.restore();
+                }
+                else if (i.type == "image") {
+                    window.ctx.save();
+                    const img = eval(i.image);
+                    const [r_val, g_val, b_val, a_val] = i.color;
+                    
+                    window.ctx.translate(i.x + i.dx, i.y + i.dy);
+                    if (i.rotate != 0.0) window.ctx.rotate(i.rotate * Math.PI / 180);
+                    
+                    if (a_val != 1.0) window.ctx.globalAlpha = a_val;
+                    
+                    if (r_val != 255 || g_val != 255 || b_val != 255) {
+                        // 使用新的滤镜函数
+                        window.ctx.drawImageWithColorFilter(img, r_val, g_val, b_val, 0, 0, i.width, i.height);
+                    } else {
+                        // 使用常规的 drawImage
+                        window.ctx.drawImage(img, 0, 0, i.width, i.height);
+                    }
+                    
+                    window.ctx.restore();
+                }
+                else if (i.type == "call") {
+                    this[i.name](...i.args);
+                }
+                else if (i.type == "pbar") {
+                    const { w, pw, process } = i;
+                    window.ctx.save();
+                    const [r, g, b, a] = i.color.split("(")[1].split(")")[0].split(", ");
+                    window.ctx.fillRectExConvert2LeftCenter(0, 0, w * process, pw, `rgba(${145 * r / 255}, ${145 * g / 255}, ${145 * b / 255}, ${0.85 * a})`);
+                    window.ctx.fillRectExConvert2LeftCenter(w * process - w * 0.00175, 0, w * 0.00175, pw, `rgba(${r}, ${g}, ${b}, ${0.9 * a})`);
+                    window.ctx.restore();
+                }
+            }
+        };
+
+    CKContext.prototype.clear = function() {
+        window.ctx.save();
+        window.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        window.ctx.clearRect(0, 0, window.ctx.canvas.width, window.ctx.canvas.height);
+        window.ctx.restore();
+    };
         (() => {
         const cv = document.createElement("canvas");
         cv.nobitmap_tag = true;
@@ -194,57 +624,13 @@ void main() {
     })();
         
         // (你项目原来的所有 JS 代码，从 (() => { ... })(); 开始)
-        CanvasRenderingContext2D.prototype.reset = (
-        CanvasRenderingContext2D.prototype.reset ||
-        function () {
-            this.resetTransform();
-            this.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-    );
-
-    CanvasRenderingContext2D.prototype.roundRect = (
-        CanvasRenderingContext2D.prototype.roundRect ||
-        CanvasRenderingContext2D.prototype.rect
-    );
+        
         //    ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-    root_ele = document.getRootNode();
-    html_ele = root_ele.children[0];
-    body_ele = html_ele.children[1];
-    canvas_ele = document.createElement("canvas");
-    canvas_ele.className = "main-canvas";
-    dialog_canvas_ele = document.createElement("canvas");
-    dialog_canvas_ele.className = "dialog-canvas";
-    body_ele.appendChild(canvas_ele);
-    body_ele.appendChild(dialog_canvas_ele);
-    mask = document.querySelector(".mask");
     
-    ctx = Canvas2D.createCanvasContext(canvas_ele);
-    window.ctx = ctx;
-    const nativePrototype = CanvasRenderingContext2D.prototype;
-    const customMethods = [
-        'reset', 'roundRect', '_drawImage', 'drawImage', 'drawRotateImage', 
-        'drawAnchorESRotateImage', 'drawScaleImage', 'drawRPEMultipleRotateText', 
-        'drawRotateText', 'drawAlphaImage', 'drawAlphaCenterImage', 'drawTextEx', 
-        'fillRectEx', 'fillRectExConvert2LeftCenter', 'fillRectExByRect', 
-        'strokeRectEx', 'addRoundRectData', 'drawRoundDatas', 'roundRectsEx', 
-        'drawLineEx', '_diagonalRectangle', 'clipDiagonalRectangle', 'clipRect', 
-        'drawClipXText', 'drawDiagonalRectangle', 'drawDiagonalDialogRectangleText', 
-        'drawDiagonalRectangleClipImage', 'drawDiagonalRectangleClipImageOnlyHeight', 
-        'drawRotateText2', 'drawTriangleFrame', 'drawRectMultilineText', 
-        'drawRectMultilineTextDiagonal', 'drawRectMultilineTextCenter', 
-        'drawUIItems', 'clear'
-    ];
-
-    for (const methodName of customMethods) {
-        if (nativePrototype[methodName]) {
-            ctx[methodName] = nativePrototype[methodName].bind(ctx);
-        } else {
-            console.warn(`Custom method ${methodName} not found on native prototype.`);
-        }
-    }
-    // 强制用你的 drawImage 覆盖 Canvaskit2D 的版本，以支持 toLowQualityImage 优化
-    ctx._drawImage = ctx.drawImage; // 备份 Canvaskit2D 的 drawImage
-    ctx.drawImage = nativePrototype.drawImage.bind(ctx);
+    
+    
+    
+    
     // === 嫁接结束 ===
 
     // === 新增代码：添加带颜色滤镜的绘图方法 ===
@@ -273,12 +659,12 @@ void main() {
 
         // 创建一个 Paint 对象并应用颜色滤镜
         const paint = new CanvasKit.Paint();
-        paint.setAlphaf(this.globalAlpha); // 遵循全局透明度
-        paint.setBlendMode(this._getBlendMode()); // 遵循全局混合模式
+        paint.setAlphaf(window.ctx.globalAlpha); // 遵循全局透明度
+        paint.setBlendMode(window.ctx._getBlendMode()); // 遵循全局混合模式
         paint.setColorFilter(CanvasKit.ColorFilter.MakeMatrix(colorMatrix));
         
         // 使用底层 _ckCanvas 进行绘制
-        this._ckCanvas.drawImageRect(
+        window.ctx._ckCanvas.drawImageRect(
             ckImage,
             CanvasKit.XYWHRect(0, 0, ckImage.width(), ckImage.height()), // 源矩形
             CanvasKit.XYWHRect(dx, dy, dw, dh),                           // 目标矩形
@@ -292,7 +678,6 @@ void main() {
     // === 辅助函数添加完毕 ===
 
     const dialog_canvas_ctx = dialog_canvas_ele.getContext("2d");
-    dialog_canvas_ctx = dialog_canvas_ele.getContext("2d");
     jscodes = new Array();
     resize_task = false;
     lfdaot_render_fcount = 0;
@@ -334,32 +719,32 @@ void main() {
 
     class Queue {
         constructor() {
-            this.items = []
+            window.ctx.items = []
         }
         put(element) {
-            this.items.push(element)
+            window.ctx.items.push(element)
         }
         get() {
-            return this.items.shift()
+            return window.ctx.items.shift()
         }
         empty() {
-            return this.items.length === 0
+            return window.ctx.items.length === 0
         }
     }
 
     class ShaderLoader {
         constructor() {
-            this.pgs = new Map();
+            window.ctx.pgs = new Map();
         }
 
         load(name, glsl) {
-            if (this.pgs.has(name)) return;
+            if (window.ctx.pgs.has(name)) return;
             let pg = createGLProgram(glsl);
-            this.pgs.set(name, pg);
+            window.ctx.pgs.set(name, pg);
         }
 
         render(im, name, uniforms) {
-            let pg = this.pgs.get(name);
+            let pg = window.ctx.pgs.get(name);
             if (pg === void 0) return null;
             return drawGL(pg, im, uniforms);
         }
@@ -367,7 +752,7 @@ void main() {
         renderToCanvas(ctx, name, uniforms) {
             const cv = ctx.canvas;
             uniforms["screenSize"] = [cv.width, cv.height];
-            let result = this.render(cv, name, uniforms);
+            let result = window.ctx.render(cv, name, uniforms);
             if (result === null) return;
             ctx.clear();
             ctx.save();
@@ -380,7 +765,7 @@ void main() {
 
     const mainShaderLoader = new ShaderLoader();
 
-    function resizeCanvas(w, h) {
+    window.resizeCanvas = function resizeCanvas(w, h) {
         if (w === undefined || h === undefined) {
             w = window.innerWidth;
             h = window.innerHeight;
@@ -448,7 +833,7 @@ void main() {
         blackgrd.addColorStop(1.0, "rgba(0, 0, 0, 0.5)");
     }
 
-    async function loadrespackage(url, indexs) {
+    window.loadrespackage = async function loadrespackage(url, indexs) {
         let respackage = await (await fetch(url)).blob();
         let imnames = [];
         for (i of indexs) {
@@ -515,7 +900,7 @@ void main() {
         return texts;
     }
 
-    function r2eval(c) {
+    window.r2eval = function r2eval(c) {
         try {
             return eval(c);
         } catch (e) {
@@ -617,20 +1002,20 @@ void main() {
             return text;
         };
 
-        CanvasRenderingContext2D.prototype._wlMoreChinese_fillText = CanvasRenderingContext2D.prototype.fillText;
-        CanvasRenderingContext2D.prototype._wlMoreChinese_strokeText = CanvasRenderingContext2D.prototype.strokeText;
-        CanvasRenderingContext2D.prototype._wlMoreChinese_measureText = CanvasRenderingContext2D.prototype.measureText;
+        CKContext.prototype._wlMoreChinese_fillText = CKContext.prototype.fillText;
+        CKContext.prototype._wlMoreChinese_strokeText = CKContext.prototype.strokeText;
+        CKContext.prototype._wlMoreChinese_measureText = CKContext.prototype.measureText;
 
-        CanvasRenderingContext2D.prototype.fillText = function(text, ...args) {
-            return this._wlMoreChinese_fillText(wlmc_text_processer(text), ...args);
+        CKContext.prototype.fillText = function(text, ...args) {
+            return window.ctx._wlMoreChinese_fillText(wlmc_text_processer(text), ...args);
         }
 
-        CanvasRenderingContext2D.prototype.strokeText = function(text, ...args) {
-            return this._wlMoreChinese_strokeText(wlmc_text_processer(text), ...args);
+        CKContext.prototype.strokeText = function(text, ...args) {
+            return window.ctx._wlMoreChinese_strokeText(wlmc_text_processer(text), ...args);
         }
 
-        CanvasRenderingContext2D.prototype.measureText = function(text, ...args) {
-            return this._wlMoreChinese_measureText(wlmc_text_processer(text), ...args);
+        CKContext.prototype.measureText = function(text, ...args) {
+            return window.ctx._wlMoreChinese_measureText(wlmc_text_processer(text), ...args);
         }
     }
 
@@ -677,407 +1062,7 @@ void main() {
         return im;
     }
 
-    CanvasRenderingContext2D.prototype._drawImage = CanvasRenderingContext2D.prototype.drawImage;
-
-    CanvasRenderingContext2D.prototype.drawImage = function(...args) {
-        args[0] = toLowQualityImage(args[0]);
-        if (!this.globalAlpha) return;
-        return this._drawImage(...args);
-    }
-
-    CanvasRenderingContext2D.prototype.drawRotateImage = function(im, x, y, width, height, deg, alpha) { // draw at the position center
-        this.save();
-        this.globalAlpha *= alpha;
-        if (!!deg) {
-            this.translate(x, y);
-            this.rotate(deg * Math.PI / 180);
-            this.drawImage(im, -width / 2, -height / 2, width, height);
-        } else {
-            this.drawImage(im, x - width / 2, y - height / 2, width, height);
-        }
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawAnchorESRotateImage = function(im, x, y, width, height, deg, alpha) {
-        this.save();
-        this.globalAlpha *= alpha;
-        if (!!deg) {
-            this.translate(x, y);
-            this.rotate(deg * Math.PI / 180);
-            this.drawImage(im, -width / 2, -height, width, height);
-        } else {
-            this.drawImage(im, x - width / 2, y - height, width, height);
-        }
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawScaleImage = function(im, x, y, width, height, xs, ys) {
-        x += width / 2; y += height / 2;
-        this.save();
-        this.translate(x, y);
-        this.scale(xs, ys);
-        this.drawImage(im, -width / 2, -height / 2, width, height);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawRPEMultipleRotateText = function(text, x, y, deg, fontsize, color, xs, ys) {
-        this.save();
-        this.translate(x, y);
-        this.rotate(deg * Math.PI / 180);
-        this.scale(xs, ys);
-        this.fillStyle = color;
-        this.textAlign = "center";
-        this.textBaseline = "middle";
-        this.font = `${fontsize}px PhigrosFont`;
-
-        if (text.includes("\n") && RPEVersion >= 150) {
-            let texts = text.split("\n");
-            let x = 0.0; let y = 0.0;
-            for (let currtext of texts) {
-                if (currtext) this.fillText(currtext, x, y);
-                let measure = this.measureText(currtext);
-                y += (measure.actualBoundingBoxDescent + measure.actualBoundingBoxAscent) * 1.25;
-            }
-        }
-        else {
-            this.fillText(text, 0, 0);
-        }
-
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawRotateText = function(text, x, y, deg, fontsize, color, xscale, yscale) {
-        this.save();
-        this.translate(x, y);
-        this.rotate(deg * Math.PI / 180);
-        this.scale(xscale, yscale);
-        this.fillStyle = color;
-        this.textAlign = "center";
-        this.textBaseline = "middle";
-        this.font = `${fontsize}px PhigrosFont`;
-        this.fillText(text, 0, 0);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawAlphaImage = function(im, x, y, width, height, alpha) {
-        this.save()
-        this.globalAlpha *= alpha;
-        this.drawImage(im, x, y, width, height);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawAlphaCenterImage = function(im, x, y, width, height, alpha) {
-        this.save()
-        this.globalAlpha *= alpha;
-        this.drawImage(im, x - width / 2, y - height / 2, width, height);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawTextEx = function(text, x, y, font, color, align, baseline) {
-        this.save();
-        this.fillStyle = color;
-        this.textAlign = align;
-        this.textBaseline = baseline;
-        this.font = font;
-        this.fillText(text, x, y);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.fillRectEx = function(x, y, w, h, color) {
-        this.save();
-        this.fillStyle = color;
-        this.fillRect(x, y, w, h);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.fillRectExConvert2LeftCenter = function(x, y, w, h, color) {
-        y += h / 2;
-        this.save();
-        this.fillStyle = color;
-        this.beginPath();
-        this.moveTo(x, y - h / 2);
-        this.lineTo(x + w, y - h / 2);
-        this.lineTo(x + w, y + h / 2);
-        this.lineTo(x, y + h / 2);
-        this.closePath();
-        this.fill();
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.fillRectExByRect = function(x0, y0, x1, y1, color) {
-        return this.fillRectEx(x0, y0, x1 - x0, y1 - y0, color);
-    }
-
-    CanvasRenderingContext2D.prototype.strokeRectEx = function(x, y, w, h, color, width) {
-        this.save();
-        this.strokeStyle = color;
-        this.lineWidth = width;
-        this.strokeRect(x, y, w, h);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.addRoundRectData = function(x, y, w, h, r) {
-        if (this._roundDatas == undefined) this._roundDatas = [];
-        this._roundDatas.push({ x: x, y: y, w: w, h: h, r: r });
-    }
-
-    CanvasRenderingContext2D.prototype.drawRoundDatas = function(color) {
-        if (this._roundDatas) {
-            this.roundRectsEx(color, this._roundDatas);
-            this._roundDatas = undefined;
-        }
-    }
-
-    CanvasRenderingContext2D.prototype.roundRectsEx = function(color, datas) {
-        this.save();
-        this.fillStyle = color;
-        this.beginPath();
-        for (let i of datas) {
-            this.roundRect(i.x, i.y, i.w, i.h, i.r);
-        }
-        this.fill();
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawLineEx = function(x1, y1, x2, y2, width, color) {
-        this.save();
-        this.strokeStyle = color;
-        this.lineWidth = width;
-        this.beginPath();
-        this.moveTo(x1, y1);
-        this.lineTo(x2, y2);
-        this.stroke();
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype._diagonalRectangle = function(x0, y0, x1, y1, power) {
-        this.moveTo(x0 + (x1 - x0) * power, y0);
-        this.lineTo(x1, y0);
-        this.lineTo(x1 - (x1 - x0) * power, y1);
-        this.lineTo(x0, y1);
-        this.lineTo(x0 + (x1 - x0) * power, y0);
-    }
-
-    CanvasRenderingContext2D.prototype.clipDiagonalRectangle = function(x0, y0, x1, y1, power) {
-        this.beginPath();
-        this._diagonalRectangle(x0, y0, x1, y1, power);
-        this.clip();
-    }
-
-    CanvasRenderingContext2D.prototype.clipRect = function(x0, y0, x1, y1) {
-        this.beginPath();
-        this.rect(x0, y0, x1 - x0, y1 - y0);
-        this.clip();
-    }
     
-    CanvasRenderingContext2D.prototype.drawClipXText = function(text, x, y, align, baseline, color, font, clipx0, clipx1) {
-        this.save();
-        this.clipRect(clipx0, 0, clipx1, this.canvas.height);
-        this.fillStyle = color;
-        this.textAlign = align;
-        this.textBaseline = baseline;
-        this.font = font;
-        this.fillText(text, x, y);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawDiagonalRectangle = function(x0, y0, x1, y1, power, color) {
-        this.save();
-        this.fillStyle = color;
-        this.beginPath();
-        this._diagonalRectangle(x0, y0, x1, y1, power);
-        this.fill();
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawDiagonalDialogRectangleText = function(x0, y0, x1, y1, power, text1, text2, color, font) {
-        this.save();
-        this.fillStyle = color;
-        this.font = font;
-        this.textBaseline = "middle";
-        this.textAlign = "left";
-        this.fillText(text1, x0 + (x1 - x0) * power * 3.0, y0 + (y1 - y0) * 0.5);
-        this.textAlign = "right";
-        this.fillText(text2, x1 - (x1 - x0) * power * 2.0, y0 + (y1 - y0) * 0.5);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawDiagonalRectangleClipImage = function(x0, y0, x1, y1, im, imx, imy, imw, imh, power, alpha) {
-        if (alpha == 0.0) return;
-        this.save();
-        this.globalAlpha *= alpha;
-        this.beginPath();
-        this._diagonalRectangle(x0, y0, x1, y1, power);
-        this.clip();
-        this.drawImage(im, x0 + imx, y0 + imy, imw, imh);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawDiagonalRectangleClipImageOnlyHeight = function(x0, y0, x1, y1, im, imh, power, alpha) {
-        let imw = imh * im.width / im.height;
-        if (imw < x1 - x0) {
-            imw = x1 - x0;
-            imh = imw * im.height / im.width;
-        }
-        let imx = (x1 - x0) / 2 - imw / 2;
-        let imy = (y1 - y0) / 2 - imh / 2;
-        return this.drawDiagonalRectangleClipImage(x0, y0, x1, y1, im, imx, imy, imw, imh, power, alpha);
-    }
-
-    CanvasRenderingContext2D.prototype.drawRotateText2 = function(text, x, y, deg, color, font, align, baseline) {
-        this.save();
-        this.translate(x, y);
-        this.rotate(deg * Math.PI / 180);
-        this.fillStyle = color;
-        this.textAlign = align;
-        this.textBaseline = baseline;
-        this.font = font;
-        this.fillText(text, 0, 0);
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawTriangleFrame = function(x0, y0, x1, y1, x2, y2, color, width) {
-        this.save();
-        this.strokeStyle = color;
-        this.lineWidth = width;
-        this.beginPath();
-        this.moveTo(x0, y0);
-        this.lineTo(x1, y1);
-        this.lineTo(x2, y2);
-        this.closePath();
-        this.stroke();
-        this.restore();
-    }
-
-    CanvasRenderingContext2D.prototype.drawRectMultilineText = function(x0, y0, x1, y1, text, color, font, fontsize, lineOffsetScale) {
-        this.save();
-
-        this.font = font;
-        this.fillStyle = color;
-        this.textBaseline = "top";
-        this.textAlign = "left";
-        let texts = splitText(x0, y0, x1, y1, text, this);
-
-        this.rect(x0, y0, x1 - x0, y1 - y0);
-        let dy = 0.0;
-
-        for (let i = 0; i < texts.length; i++) {
-            this.fillText(texts[i], x0, y0 + dy);
-            dy += fontsize * lineOffsetScale;
-            if (dy >= (y1 - y0)) break;
-        }
-
-        this.restore();
-        return texts.length * fontsize * lineOffsetScale;
-    }
-
-    CanvasRenderingContext2D.prototype.drawRectMultilineTextDiagonal = function(x0, y0, x1, y1, text, color, font, fontsize, lineDiagonal, lineOffsetScale) {
-        this.save();
-
-        this.font = font;
-        this.fillStyle = color;
-        this.textBaseline = "top";
-        this.textAlign = "left";
-        let texts = splitText(x0, y0, x1, y1, text, this);
-
-        this.rect(x0, y0, x1 - x0, y1 - y0);
-        let dx = 0.0;
-        let dy = 0.0;
-
-        for (let i = 0; i < texts.length; i++) {
-            if (texts[i]) {
-                this.fillText(texts[i], x0 + dx, y0 + dy);
-                dy += fontsize * lineOffsetScale;
-                dx += lineDiagonal;
-            } else {
-                dx += lineDiagonal * 0.5;
-                dy += fontsize * lineOffsetScale * 0.5;
-            }
-            if (dy >= (y1 - y0)) break;
-        }
-
-        this.restore();
-        return texts.length * fontsize * lineOffsetScale;
-    }
-
-    CanvasRenderingContext2D.prototype.drawRectMultilineTextCenter = function(x0, y0, x1, y1, text, color, font, fontsize, lineOffsetScale) {
-        this.save();
-
-        this.font = font;
-        this.fillStyle = color;
-        this.textBaseline = "top";
-        this.textAlign = "center";
-        let texts = splitText(x0, y0, x1, y1, text, this);
-
-        this.rect(x0, y0, x1 - x0, y1 - y0);
-        let dy = 0.0;
-
-        for (let i = 0; i < texts.length; i++) {
-            this.fillText(texts[i], x0 + (x1 - x0) / 2, y0 + dy);
-            dy += fontsize * lineOffsetScale;
-            if (dy >= (y1 - y0)) break;
-        }
-
-        this.restore();
-        return texts.length * fontsize * lineOffsetScale;
-    }
-
-    CanvasRenderingContext2D.prototype.drawUIItems = function(datas) {
-            for (let i of datas) {
-                if (i == null) continue;
-
-                if (i.type == "text") {
-                    this.save();
-                    this.font = `${i.fontsize}px PhigrosFont`;
-                    this.textBaseline = i.textBaseline;
-                    this.textAlign = i.textAlign;
-                    this.fillStyle = i.color;
-                    this.translate(i.x + i.dx, i.y + i.dy);
-                    if (i.sx != 1.0 || i.sy != 1.0) this.scale(i.sx, i.sy);
-                    if (i.rotate != 0.0) this.rotate(i.rotate * Math.PI / 180);
-                    this.fillText(i.text, 0, 0);
-                    this.restore();
-                }
-                else if (i.type == "image") {
-                    this.save();
-                    const img = eval(i.image);
-                    const [r_val, g_val, b_val, a_val] = i.color;
-                    
-                    this.translate(i.x + i.dx, i.y + i.dy);
-                    if (i.rotate != 0.0) this.rotate(i.rotate * Math.PI / 180);
-                    
-                    if (a_val != 1.0) this.globalAlpha = a_val;
-                    
-                    if (r_val != 255 || g_val != 255 || b_val != 255) {
-                        // 使用新的滤镜函数
-                        this.drawImageWithColorFilter(img, r_val, g_val, b_val, 0, 0, i.width, i.height);
-                    } else {
-                        // 使用常规的 drawImage
-                        this.drawImage(img, 0, 0, i.width, i.height);
-                    }
-                    
-                    this.restore();
-                }
-                else if (i.type == "call") {
-                    this[i.name](...i.args);
-                }
-                else if (i.type == "pbar") {
-                    const { w, pw, process } = i;
-                    this.save();
-                    const [r, g, b, a] = i.color.split("(")[1].split(")")[0].split(", ");
-                    this.fillRectExConvert2LeftCenter(0, 0, w * process, pw, `rgba(${145 * r / 255}, ${145 * g / 255}, ${145 * b / 255}, ${0.85 * a})`);
-                    this.fillRectExConvert2LeftCenter(w * process - w * 0.00175, 0, w * 0.00175, pw, `rgba(${r}, ${g}, ${b}, ${0.9 * a})`);
-                    this.restore();
-                }
-            }
-        };
-
-    CanvasRenderingContext2D.prototype.clear = function() {
-        this.save();
-        this.setTransform(1, 0, 0, 1, 0, 0);
-        this.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.restore();
-    }
 
     const proxyTouchEvent = function (from, to) {
         window.addEventListener(from, (e) => {
