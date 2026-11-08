@@ -237,10 +237,6 @@ void main() {
         "P", "Q", "R", "S", "T",
         "U", "V", "W", "X", "Y", "Z"
     ]
-    const maxDpr = window.performance ? Math.min(2, window.devicePixelRatio) : 1;
-    const renderScale = Math.min(1, 720 / Math.min(window.innerWidth, window.innerHeight));
-    const dpr = renderScale * maxDpr;
-
     const None = null;
     const True = true;
     const False = false;
@@ -1013,7 +1009,10 @@ void main() {
     proxyTouchEvent("touchmove", "mousemove");
     proxyTouchEvent("touchend", "mouseup");
 
-    const fixEventPosition = (x, y) => [x * dpr - canvasPosD[0], y * dpr - canvasPosD[1]];
+    const fixEventPosition = (x, y) => [
+        x * canvas_ele.width / window.innerWidth - canvasPosD[0],
+        y * canvas_ele.height / window.innerHeight - canvasPosD[1]
+    ];
     const proxyNeedPositionEvent = function (from, to, cls) {
         const othernames = ["altKey", "bubbles", "button", "buttons", "cancelBubble", "cancelable", "clientX", "clientY", "composed", "ctrlKey", "currentTarget", "defaultPrevented", "detail", "eventPhase", "fromElement", "layerX", "layerY", "metaKey", "movementX", "movementY", "offsetX", "offsetY", "pageX", "pageY", "relatedTarget", "returnValue", "screenX", "screenY", "shiftKey", "sourceCapabilities", "srcElement", "target", "timeStamp", "toElement", "type", "view", "which", "x", "y"];
         window.addEventListener(from, (e) => {

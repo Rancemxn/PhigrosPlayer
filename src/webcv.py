@@ -245,6 +245,7 @@ prefs:
   gfx.canvas.accelerated.max-size: 999999
   gfx.webrender.all: true
   gfx.webrender.debug.profiler: true
+  gfx.webrender.debug.gpu-time-queries: true
   gfx.webrender.fallback.software: false
   gfx.webrender.software: false
   gfx.webrender.multithreading: true
@@ -310,9 +311,10 @@ prefs:
         if checksys == 'Android': return
         self.web.set_title(title) if not disengage_webview else None
     
-    def winfo_screenwidth(self) -> int: return screen_width
+    # Callers apply the WebView's DPR; Android DisplayMetrics already contains physical pixels.
+    def winfo_screenwidth(self) -> int: return self.winfo_legacywindowwidth() if checksys == 'Android' else screen_width
 
-    def winfo_screenheight(self) -> int: return screen_height
+    def winfo_screenheight(self) -> int: return self.winfo_legacywindowheight() if checksys == 'Android' else screen_height
 
     def winfo_hwnd(self) -> int: return self.web_hwnd
     def winfo_legacywindowwidth(self) -> int: return self.run_js_code("window.innerWidth;")

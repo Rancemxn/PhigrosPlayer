@@ -1,2 +1,2 @@
-# p4a's hostpython needs PYTHONPATH, which build 1.5+ clears in isolated builds.
-build<1.5
+# shortcut: old p4a needs hostpython's PYTHONPATH; unpin after its isolated builds support newer build.
+build==1.4.0
