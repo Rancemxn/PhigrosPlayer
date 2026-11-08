@@ -205,6 +205,20 @@ class WebCanvas:
 
     @run_on_ui_thread
     def geckoview_start(self):
+        display = activity.getWindowManager().getDefaultDisplay()
+        current_mode = display.getMode()
+        preferred_mode = max(
+            (mode for mode in display.getSupportedModes()
+             if (mode.getPhysicalWidth(), mode.getPhysicalHeight()) ==
+             (current_mode.getPhysicalWidth(), current_mode.getPhysicalHeight())),
+            key=lambda mode: mode.getRefreshRate(), default=current_mode,
+        )
+        # Request high refresh without changing resolution; Android still applies the user's limits.
+        android_window = activity.getWindow()
+        window_params = android_window.getAttributes()
+        window_params.preferredDisplayModeId = preferred_mode.getModeId()
+        android_window.setAttributes(window_params)
+
         def run_server():
             PORT = 4747
             web_dir = os.path.dirname(os.path.abspath('web_canvas.html'))
