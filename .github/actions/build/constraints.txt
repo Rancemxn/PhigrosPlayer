@@ -1,0 +1,2 @@
+# p4a's hostpython needs PYTHONPATH, which build 1.5+ clears in isolated builds.
+build<1.5

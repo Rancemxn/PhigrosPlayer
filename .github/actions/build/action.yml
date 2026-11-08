@@ -76,6 +76,7 @@ runs:
     
     - name: Build Android
       env:
+        PIP_CONSTRAINT: ${{ github.workspace }}/.github/actions/build/constraints.txt
         P4A_RELEASE_KEYSTORE: ${{ github.workspace }}/my-release-key.keystore
         P4A_RELEASE_KEYALIAS: ${{ inputs.key_alias }}
         P4A_RELEASE_KEYSTORE_PASSWD: ${{ inputs.keystore_password }}
